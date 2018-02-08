@@ -249,8 +249,6 @@ a.legend()
 fig.show()
 
 
-
-
 plt.show()
 
 
