@@ -5,11 +5,11 @@ from tempCorr import *
 from nernst import *
 from matplotlib.collections import LineCollection
 from plots import *
-from run import *
+# from run import *
 
-tstop = 10
+tstop = 70
 h.tstop = tstop
-h.dt=0.0001
+h.dt=0.001
 h.celsius = (T-273)
 
 
@@ -17,13 +17,13 @@ h.celsius = (T-273)
 
 def define_geometry(icc):
 	icc.diam = 50
-	icc.L=500
-	icc.nseg=10
+	icc.L=50					
+	icc.nseg=1
 	icc.cm = 25
 
 def insert_mechanisms(icc):
 
-	icc.insert('pas')
+	# icc.insert('pas')
 
 	icc.insert('Na')
 	icc.nai = nai
@@ -92,6 +92,44 @@ def insert_mechanisms(icc):
 	icc.G_Cacl_cacl = 10.1	#10.1
 	icc.tau_act_Cacl_cacl = tau_act_Cacl
 
+def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG):
+
+
+
+	v.record(icc(0.5)._ref_v)
+	t.record(h._ref_t)
+	ina.record(icc(.5)._ref_ina)
+	ik.record(icc(.5)._ref_ik)
+	icl.record(icc(.5)._ref_icl)
+	ica.record(icc(.5)._ref_ica)
+	ins.record(icc(.5)._ref_i_nscc)
+	eca.record(icc(.5)._ref_eca)
+	cai.record(icc(.5)._ref_cai)
+	cao.record(icc(.5)._ref_cao)
+	ek.record(icc(.5)._ref_ek)
+	capui.record(icc(.5)._ref_capui)
+	caeri.record(icc(.5)._ref_caeri)
+	cami.record(icc(.5)._ref_cami)
+	cli.record(icc(.5)._ref_cli)
+	clo.record(icc(.5)._ref_clo)
+	oano.record(icc(.5)._ref_O_Ano1_ano1)
+	ecl.record(icc(.5)._ref_ecl)
+	ena.record(icc(.5)._ref_ena)
+	
+	ica_vddr.record(icc(.5)._ref_ica_vddr)
+	icl_ano1.record(icc(.5)._ref_icl_ano1)
+	icl_cacl.record(icc(.5)._ref_icl_cacl)
+	ina_Na.record(icc(.5)._ref_ina_Na)
+	ik_kv11.record(icc(.5)._ref_ik_kv11)
+	ik_bk.record(icc(.5)._ref_ik_bk)
+	ica_ltype.record(icc(.5)._ref_ica_ltype)
+	i_nscc.record(icc(.5)._ref_i_nscc)
+	ik_Kb.record(icc(.5)._ref_ik_Kb)
+	ica_pmca.record(icc(.5)._ref_ica_pmca)
+	ik_ERG.record(icc(.5)._ref_ik_ERG)
+
+
+	h.run()
 
 
 icc = h.Section(name='icc')
@@ -103,15 +141,15 @@ define_geometry(icc1)
 icc1.nseg = 1
 insert_mechanisms(icc)
 
-icc1.insert('pas')
+# icc1.insert('pas')
 # icc.connect(icc1(0), 1)
   
 #icc.Jmax_serca_conpu =Jmax_serca
 
-#vclamp = h.SEClamp(icc(0.5))
- #vclamp.dur1 = tstop
-# vclamp.amp1=-50
-# vclamp.rs=.00001
+vclamp = h.SEClamp(icc(0.5))
+vclamp.dur1 = tstop
+vclamp.amp1=-50
+vclamp.rs=.00001
 
 h.v_init = -70
 
@@ -168,6 +206,7 @@ variables = [v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano
 v_e.record(icc1(0.9)._ref_v)
 run_and_record(icc,*variables)
 
+# v= v.to_python()
 #print(eca[1])
 
 
@@ -181,17 +220,17 @@ y=[]
 
 
 print(type(t))
-x=t
-y.append(-15*np.ones(np.shape(t)))
-y.append(-20*np.ones(np.shape(t)))
-y.append(-25*np.ones(np.shape(t)))
-y.append(-30*np.ones(np.shape(t)))
-y.append(-35*np.ones(np.shape(t)))
+# x=t
+# y.append(-15*np.ones(np.shape(t)))
+# y.append(-20*np.ones(np.shape(t)))
+# y.append(-25*np.ones(np.shape(t)))
+# y.append(-30*np.ones(np.shape(t)))
+# y.append(-35*np.ones(np.shape(t)))
 
-y.append(-40*np.ones(np.shape(t)))
-y.append(-45*np.ones(np.shape(t)))
-y.append(-50*np.ones(np.shape(t)))
-y.append(-55*np.ones(np.shape(t)))
+# y.append(-40*np.ones(np.shape(t)))
+# y.append(-45*np.ones(np.shape(t)))
+# y.append(-50*np.ones(np.shape(t)))
+# y.append(-55*np.ones(np.shape(t)))
 
 
 
@@ -202,18 +241,18 @@ y.append(-55*np.ones(np.shape(t)))
 
 currents=['i_cacl','i_kb','i_bk','i_ERG','na','i_nscc','i_vddr','i_ltype','i_ano1']
 
-lwidths.append(1+ 5*np.abs(icl_cacl)/(max(np.abs(icl_cacl))) )
+# lwidths.append(1+ 5*np.abs(icl_cacl)/(max(np.abs(icl_cacl))) )
 
-lwidths.append(1+ 5*np.abs(ik_Kb)/(max(np.abs(ik_Kb))) )
+# lwidths.append(1+ 5*np.abs(ik_Kb)/(max(np.abs(ik_Kb))) )
 
-lwidths.append(1+ 5*np.abs(ik_bk)/(max(np.abs(ik_bk))) )
-lwidths.append(1+ 5*np.abs(ik_ERG)/(max(np.abs(ik_ERG))) )
-lwidths.append(1+ 5*np.abs(ina_Na)/(max(np.abs(ina_Na))) )
+# lwidths.append(1+ 5*np.abs(ik_bk)/(max(np.abs(ik_bk))) )
+# lwidths.append(1+ 5*np.abs(ik_ERG)/(max(np.abs(ik_ERG))) )
+# lwidths.append(1+ 5*np.abs(ina_Na)/(max(np.abs(ina_Na))) )
 
-lwidths.append(1+ 5*np.abs(i_nscc)/(max(np.abs(i_nscc))) )
-lwidths.append(1+ 5*np.abs(ica_vddr)/(max(np.abs(ica_vddr))) )
-lwidths.append(1+ 5*np.abs(ica_ltype)/(max(np.abs(ica_ltype))) )
-lwidths.append(1+ 5*np.abs(icl_ano1)/(max(np.abs(icl_ano1))) )
+# lwidths.append(1+ 5*np.abs(i_nscc)/(max(np.abs(i_nscc))) )
+# lwidths.append(1+ 5*np.abs(ica_vddr)/(max(np.abs(ica_vddr))) )
+# lwidths.append(1+ 5*np.abs(ica_ltype)/(max(np.abs(ica_ltype))) )
+# lwidths.append(1+ 5*np.abs(icl_ano1)/(max(np.abs(icl_ano1))) )
 
 # lwidths.append(1+ 10*np.abs(icl)/(max(np.abs(icl))) )
 # lwidths.append(1+ 10*np.abs(icl)/(max(np.abs(icl))) )
@@ -222,9 +261,19 @@ lwidths.append(1+ 5*np.abs(icl_ano1)/(max(np.abs(icl_ano1))) )
 
 
 
+# # writing variable to file
+# f = open('v', 'w')
+# f.write(str(v))
+# f.close()
 
 
-fig, a = plt.subplots()
+
+
+
+
+
+
+# fig, a = plt.subplots()
 
 # plotting currents
 # color = ['xkcd:chartreuse','xkcd:purple','xkcd:teal','xkcd:violet','xkcd:yellow','xkcd:black','xkcd:fuchsia','xkcd:magenta','xkcd:lime']
@@ -240,13 +289,21 @@ fig, a = plt.subplots()
 # 		# plt.legend(str(i))
 
 # # plt.plot(v)
-a.plot(t,v , label = 'v', color= 'red')
-a.plot(t,v_e , label = 'v', color= 'blue')
-a.set_xlim(0,tstop)
-a.set_ylim(-100,0)
-a.legend()
+
+plt.figure(1)
+plt.plot(t,v , label = 'v', color= 'red')
+
+# a.plot(t,v_e , label = 'v', color= 'blue')
+# plt.set_xlim(0,tstop)
+# a.set_ylim(-100,0)
+# a.legend()
 # plt.plot(t,v)
-fig.show()
+
+
+
+
+# fig.show()
+
 
 
 plt.show()
