@@ -7,90 +7,111 @@ from matplotlib.collections import LineCollection
 from plots import *
 # from run import *
 
-tstop = 100
+tstop = 20
 h.tstop = tstop
-h.dt=0.001
+h.dt=0.0001
 h.celsius = (T-273)
 
 
 
 
 def define_geometry(icc):
-	icc.diam = 50
-	icc.L=50					
-	icc.nseg=1
+	icc.diam = 6.827*2
+	icc.L = 600.827					
+	icc.nseg = 11
 	icc.cm = 25
+	icc.Ra = 50
 
 def insert_mechanisms(icc):
 
-	# icc.insert('pas')
+	icc.insert('pas')
+	icc.g_pas = .1
+	icc(0.5).g_pas=0
 
 	icc.insert('Na')
 	icc.nai = nai
 	icc.nao = nao
-	icc.G_Na_Na= 20		#20
+	icc.G_Na_Na= 0		#20
+	icc(0.5).G_Na_Na= 20		#20
 	icc.tau_f_Na_Na = tau_f_Na
 	icc.tau_d_Na_Na = tau_d_Na
 
-	# icc.insert('nscc')
-	# icc.G_NSCC_nscc = 12.15	#12.15
-	# icc.tau_NSCC_nscc = tau_NSCC
+	icc.insert('nscc')
+	icc.G_NSCC_nscc = 0	#12.15
+	icc(0.5).G_NSCC_nscc = 12.15	#12.15
+	icc.tau_NSCC_nscc = tau_NSCC
 
-	# icc.insert('ERG')
-	# icc.G_ERG_ERG = 2.5	#2.5
-	# icc.tau_ERG_ERG = tau_ERG 
-	# icc.ki= ki	#23
-	# icc.ko= ko	#23
+	icc.insert('ERG')
+	icc.G_ERG_ERG = 0	#2.5
+	icc(0.5).G_ERG_ERG = 2.5	#2.5
+	icc.tau_ERG_ERG = tau_ERG 
+	icc.ki= ki	#23
+	icc.ko= ko	#23
 
-	# icc.insert('bk')
-	# icc.G_bk_bk= 23+T_correction_BK #23+T_correction_BK
+	icc.insert('bk')
+	icc.G_bk_bk= 0 #23+T_correction_BK
+	icc(0.5).G_bk_bk= 23+T_correction_BK #23+T_correction_BK
 
-	# icc.insert('Kb')
-	# icc.G_Kb_Kb=0.15	#.15
+	icc.insert('Kb')
+	icc.G_Kb_Kb=0	#.15
+	icc(0.5).G_Kb_Kb=0.15	#.15
 
-	# icc.insert('kv11')
-	# icc.G_Kv11_kv11=6.3   #6.3
-	# icc.tau_d_kv11_kv11 = tau_d_kv11
-	# icc.tau_f_kv11_kv11 = tau_f_kv11
+	icc.insert('kv11')
+	icc.G_Kv11_kv11=0   #6.3
+	icc(0.5).G_Kv11_kv11=6.3   #6.3
+	icc.tau_d_kv11_kv11 = tau_d_kv11
+	icc.tau_f_kv11_kv11 = tau_f_kv11
 
-	# icc.insert('vddr')
-	# icc.G_Ca_VDDR_vddr=3	#3
-	# icc.cao = 2.5
-	# icc.tau_d_VDDR_vddr = tau_d_VDDR
-	# icc.tau_f_VDDR_vddr = tau_f_VDDR
+	icc.insert('vddr')
+	icc.G_Ca_VDDR_vddr=0	#3
+	icc(0.5).G_Ca_VDDR_vddr=3	#3
+	icc.cao = 2.5
+	icc.tau_d_VDDR_vddr = tau_d_VDDR
+	icc.tau_f_VDDR_vddr = tau_f_VDDR
 
-	# icc.insert('ltype')
-	# icc.G_Ca_Ltype_ltype=2 #2
-	# icc.tau_f_Ltype_ltype = tau_f_Ltype
-	# icc.tau_d_Ltype_ltype = tau_d_Ltype
-	# icc.tau_f_Ca_Ltype_ltype = tau_f_Ca_Ltype
+	icc.insert('ltype')
+	icc.G_Ca_Ltype_ltype=0 #2
+	icc(0.5).G_Ca_Ltype_ltype=2 #2
+	icc.tau_f_Ltype_ltype = tau_f_Ltype
+	icc.tau_d_Ltype_ltype = tau_d_Ltype
+	icc.tau_f_Ca_Ltype_ltype = tau_f_Ca_Ltype
 
-	# icc.insert('pmca')
-	# icc.J_max_PMCA_pmca= 0.088464 #0.088464
+	icc.insert('pmca')
+	icc.J_max_PMCA_pmca= 0 #0.088464
+	icc(0.5).J_max_PMCA_pmca= 0.088464 #0.088464
 
 
-	# icc.insert('concyto')
-	# J_max_leak=0.01
-	# icc.J_max_leak_concyto= J_max_leak	#0.01(mM/s) 
+	icc.insert('concyto')
+	J_max_leak=0.01
+	icc.J_max_leak_concyto= 0	#0.01(mM/s) 
+	icc(0.5).J_max_leak_concyto= J_max_leak	#0.01(mM/s) 
 
-	# icc.insert('conpu')
-	# icc.J_max_leak_conpu= J_max_leak #0.01(mM/s) 
-	# icc.Jmax_serca_conpu = 1.8333		# 1.8333	
-	# icc.J_ERleak_conpu = 1.666667		# 1.666667	
+	icc.insert('conpu')
+	icc.J_max_leak_conpu= 0 #0.01(mM/s) 
+	icc(0.5).J_max_leak_conpu= J_max_leak #0.01(mM/s) 
+	icc.Jmax_serca_conpu = 0		# 1.8333	
+	icc(0.5).Jmax_serca_conpu = 1.8333		# 1.8333	
+	icc.J_ERleak_conpu = 0		# 1.666667	
+	icc(0.5).J_ERleak_conpu = 1.666667		# 1.666667	
 
-	# icc.Jmax_IP3_conpu = 	50000		#50000  (1/s)
-	# icc.Jmax_NaCa_conpu =  0.05 	#0.05(mM/s)
-	# icc.Jmax_uni_conpu = 5000 		#5000 mM/s
+	icc.Jmax_IP3_conpu = 	0		#50000  (1/s)
+	icc(0.5).Jmax_IP3_conpu = 	50000		#50000  (1/s)
+	icc.Jmax_NaCa_conpu =  0 	#0.05(mM/s)
+	icc(0.5).Jmax_NaCa_conpu =  0.05 	#0.05(mM/s)
+	icc.Jmax_uni_conpu = 0 		#5000 mM/s
+	icc(0.5).Jmax_uni_conpu = 5000 		#5000 mM/s
 
-	# icc.insert('ano1')
-	# icc.g_Ano1_ano1 = 20	#20
-	# icc.cli = cli
-	# icc.clo = clo
-	# icc.ecl = ecl
+	icc.insert('ano1')
+	icc.g_Ano1_ano1 = 0	#20
+	icc(0.5).g_Ano1_ano1 = 20	#20
+	icc.cli = cli_
+	icc.clo = clo_
+	icc.ecl = ecl_
 
-	# icc.insert('cacl')
-	# icc.G_Cacl_cacl = 10.1	#10.1
-	# icc.tau_act_Cacl_cacl = tau_act_Cacl
+	icc.insert('cacl')
+	icc.G_Cacl_cacl = 0	#10.1
+	icc(0.5).G_Cacl_cacl = 10.1	#10.1
+	icc.tau_act_Cacl_cacl = tau_act_Cacl
 
 def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG):
 
@@ -128,14 +149,12 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	# ica_pmca.record(icc(.5)._ref_ica_pmca)
 	# ik_ERG.record(icc(.5)._ref_ik_ERG)
 
-
 	h.run()
 
 
 
 
 v = h.Vector()             # Membrane potential vector
-v_e = h.Vector()
 t = h.Vector()             # Time stamp vector
 
 cai =h.Vector()
@@ -181,6 +200,18 @@ icc = h.Section(name='icc')
 define_geometry(icc)
 insert_mechanisms(icc)
 
+# icc1 = h.Section(name='icc1')
+# icc1.nseg=1001
+# icc1.insert('pas')
+# icc1.L = 5000
+# icc1.diam=1
+# icc1.connect(icc(1))
+# icc1.cm=25
+v_e = h.Vector()
+v_e1 = h.Vector()
+v_e.record(icc(0.9)._ref_v)
+v_e1.record(icc(0.3)._ref_v)
+
 
 # vclamp = h.SEClamp(icc(0.5))
 # vclamp.dur1 = tstop
@@ -197,7 +228,10 @@ run_and_record(icc,*variables)
 
 plt.figure(1)
 plt.plot(t,v , label = 'v', color= 'red')
-plt.plot(t,ina)
+plt.plot(t,v_e , label = 'v', color= 'blue')
+plt.plot(t,v_e1 , label = 'v', color= 'green')
+
+# plt.plot(t,ina)
 
 
 plt.show()
