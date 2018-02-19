@@ -7,7 +7,7 @@ from matplotlib.collections import LineCollection
 from plots import *
 # from run import *
 
-tstop = 20
+tstop = 1
 h.tstop = tstop
 h.dt=0.0001
 h.celsius = (T-273)
@@ -17,7 +17,7 @@ h.celsius = (T-273)
 
 def define_geometry(icc):
 	icc.diam = 6.827*2
-	icc.L = 600.827					
+	icc.L = 60.827					
 	icc.nseg = 11
 	icc.cm = 25
 	icc.Ra = 50
@@ -224,12 +224,15 @@ h.v_init = -70
 run_and_record(icc,*variables)
 
 
-
+# for i in len(v_e.to_python()):
+# 	print(v_e.to_python()[i])
 
 plt.figure(1)
 plt.plot(t,v , label = 'v', color= 'red')
 plt.plot(t,v_e , label = 'v', color= 'blue')
 plt.plot(t,v_e1 , label = 'v', color= 'green')
+
+
 
 # plt.plot(t,ina)
 
