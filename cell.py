@@ -7,7 +7,7 @@ from matplotlib.collections import LineCollection
 from plots import *
 # from run import *
 
-tstop = 1
+tstop = 60
 h.tstop = tstop
 h.dt=0.0001
 h.celsius = (T-273)
@@ -228,10 +228,11 @@ run_and_record(icc,*variables)
 # 	print(v_e.to_python()[i])
 
 plt.figure(1)
-plt.plot(t,v , label = 'v', color= 'red')
-plt.plot(t,v_e , label = 'v', color= 'blue')
-plt.plot(t,v_e1 , label = 'v', color= 'green')
+plt.plot(t,v , label = 'v(0.5)', color= 'red')
+plt.plot(t,v_e , label = 'v(0.9)', color= 'blue')
+plt.plot(t,v_e1 , label = 'v(0.3)', color= 'green')
 
+plt.legend(loc = 'upper right')
 
 
 # plt.plot(t,ina)
