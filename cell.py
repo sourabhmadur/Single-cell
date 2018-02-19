@@ -8,7 +8,7 @@ from plots import *
 # from run import *
 
 
-tstop = 1
+tstop = 60
 
 h.tstop = tstop
 h.dt=0.0001
@@ -152,7 +152,7 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	# ica_pmca.record(icc(.5)._ref_ica_pmca)
 	# ik_ERG.record(icc(.5)._ref_ik_ERG)
 
-	# h.run()
+	h.run()
 
 
 
@@ -212,8 +212,15 @@ insert_mechanisms(icc)
 # icc1.cm=25
 v_e = h.Vector()
 v_e1 = h.Vector()
-v_e.record(icc(0.9)._ref_v)
-v_e1.record(icc(0.3)._ref_v)
+v_e2 = h.Vector()
+v_e3 = h.Vector()
+v_e4 = h.Vector()
+v_e.record(icc(0.6)._ref_v)
+v_e1.record(icc(0.7)._ref_v)
+v_e2.record(icc(.8)._ref_v)
+v_e3.record(icc(.9)._ref_v)
+v_e4.record(icc(1)._ref_v)
+
 
 
 # vclamp = h.SEClamp(icc(0.5))
@@ -227,11 +234,14 @@ h.v_init = -70
 run_and_record(icc,*variables)
 
 
-plt.figure(1)
-plt.plot(t,v , label = 'v', color= 'red')
-plt.plot(t,v_e , label = 'v', color= 'blue')
-plt.plot(t,v_e1 , label = 'v', color= 'green')
-
+plt.figure()
+plt.plot(t,v , label = 'v(0.5)', color= 'red')
+plt.plot(t,v_e , label = 'v(0.6)', color= 'blue')
+plt.plot(t,v_e1 , label = 'v(0.7)', color= 'green')
+plt.plot(t,v_e2 , label = 'v(0.8)', color= 'yellow')
+plt.plot(t,v_e3 , label = 'v(0.9)', color= 'black')
+plt.plot(t,v_e4 , label = 'v(1)', color= 'brown')
+plt.legend(loc = 'upper right')
 
 
 # plt.plot(t,ina)
