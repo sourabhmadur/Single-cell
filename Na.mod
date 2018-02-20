@@ -49,8 +49,7 @@ UNITSOFF
 
 PROCEDURE settables(v (mV)) {
    
-    TABLE d_Na_inf,f_Na_inf 
-          FROM -100 TO 100 WITH 5000
+
 	d_Na_inf=1/(1+exp(-(47+v)/4.8))
 	f_Na_inf=1/(1+exp((78+v)/(7)))
 	

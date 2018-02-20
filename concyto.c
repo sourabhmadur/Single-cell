@@ -116,7 +116,7 @@ extern Memb_func* memb_func;
  static HocParmUnits _hoc_parm_units[] = {
  "F_concyto", "microcoulomb/nanomole",
  "Vol_concyto", "litre",
- "J_max_leak_concyto", "mM/s",
+ "J_max_leak_concyto", "1/s",
  0,0
 };
  static double cai0 = 0;
