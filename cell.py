@@ -7,7 +7,7 @@ from matplotlib.collections import LineCollection
 from plots import *
 # from run import *
 
-tstop = 30
+tstop = 60
 h.tstop = tstop
 h.dt=0.0001
 h.celsius = (T-273)
