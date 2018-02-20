@@ -11,7 +11,8 @@ clo_ = 134
 ki= 120	#23
 ko= 7	#23
 
-nai = 30
-nao = 137
+nai_ = 30
+nao_ = 137
 
 ecl_=(R*T/F)*log(cli_/clo_)
+ena_=(R*T/F)*log(nai_/nao_)

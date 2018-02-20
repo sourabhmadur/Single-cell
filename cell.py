@@ -5,9 +5,11 @@ from tempCorr import *
 from nernst import *
 from matplotlib.collections import LineCollection
 from plots import *
+from math import pi
 # from run import *
 
-tstop = 60
+tstop = 3
+
 h.tstop = tstop
 h.dt=0.0001
 h.celsius = (T-273)
@@ -18,101 +20,138 @@ h.celsius = (T-273)
 def define_geometry(icc):
 
 	icc.diam = 6.827*2
-	icc.L = 200.827					
-	icc.nseg = 11
-	icc.cm = 25
-	icc.Ra = 50
 
+	icc.L = 6.827					
+	icc.nseg = 1
+	
+	icc.Ra = 50		#50
+
+	area = 2*pi*icc.L*(icc.diam/2)
+
+	icc.cm = .025/(area*(10**(-5)))
+	print(icc.cm)
+	
 def insert_mechanisms(icc):
 
 	icc.insert('pas')
-	icc.g_pas = .1
+	icc.g_pas = .01
 	icc(0.5).g_pas=0
 
 	icc.insert('Na')
-	icc.nai = nai
-	icc.nao = nao
+	icc.nai = nai_
+	icc.nao = nao_
+	icc.ena = ena_
 	icc.G_Na_Na= 0		#20
-	icc(0.5).G_Na_Na= 20		#20
 	icc.tau_f_Na_Na = tau_f_Na
 	icc.tau_d_Na_Na = tau_d_Na
 
 	icc.insert('nscc')
 	icc.G_NSCC_nscc = 0	#12.15
-	icc(0.5).G_NSCC_nscc = 12.15	#12.15
 	icc.tau_NSCC_nscc = tau_NSCC
 
 	icc.insert('ERG')
 	icc.G_ERG_ERG = 0	#2.5
-	icc(0.5).G_ERG_ERG = 2.5	#2.5
 	icc.tau_ERG_ERG = tau_ERG 
 	icc.ki= ki	#23
 	icc.ko= ko	#23
 
 	icc.insert('bk')
 	icc.G_bk_bk= 0 #23+T_correction_BK
-	icc(0.5).G_bk_bk= 23+T_correction_BK #23+T_correction_BK
 
 	icc.insert('Kb')
 	icc.G_Kb_Kb=0	#.15
-	icc(0.5).G_Kb_Kb=0.15	#.15
 
 	icc.insert('kv11')
 	icc.G_Kv11_kv11=0   #6.3
-	icc(0.5).G_Kv11_kv11=6.3   #6.3
 	icc.tau_d_kv11_kv11 = tau_d_kv11
 	icc.tau_f_kv11_kv11 = tau_f_kv11
 
 	icc.insert('vddr')
 	icc.G_Ca_VDDR_vddr=0	#3
-	icc(0.5).G_Ca_VDDR_vddr=3	#3
 	icc.cao = 2.5
 	icc.tau_d_VDDR_vddr = tau_d_VDDR
 	icc.tau_f_VDDR_vddr = tau_f_VDDR
 
 	icc.insert('ltype')
 	icc.G_Ca_Ltype_ltype=0 #2
-	icc(0.5).G_Ca_Ltype_ltype=2 #2
 	icc.tau_f_Ltype_ltype = tau_f_Ltype
 	icc.tau_d_Ltype_ltype = tau_d_Ltype
 	icc.tau_f_Ca_Ltype_ltype = tau_f_Ca_Ltype
 
 	icc.insert('pmca')
 	icc.J_max_PMCA_pmca= 0 #0.088464
-	icc(0.5).J_max_PMCA_pmca= 0.088464 #0.088464
 
 
 	icc.insert('concyto')
 	J_max_leak=0.01
 	icc.J_max_leak_concyto= 0	#0.01(mM/s) 
-	icc(0.5).J_max_leak_concyto= J_max_leak	#0.01(mM/s) 
 
 	icc.insert('conpu')
 	icc.J_max_leak_conpu= 0 #0.01(mM/s) 
-	icc(0.5).J_max_leak_conpu= J_max_leak #0.01(mM/s) 
 	icc.Jmax_serca_conpu = 0		# 1.8333	
-	icc(0.5).Jmax_serca_conpu = 1.8333		# 1.8333	
 	icc.J_ERleak_conpu = 0		# 1.666667	
-	icc(0.5).J_ERleak_conpu = 1.666667		# 1.666667	
 
 	icc.Jmax_IP3_conpu = 	0		#50000  (1/s)
-	icc(0.5).Jmax_IP3_conpu = 	50000		#50000  (1/s)
 	icc.Jmax_NaCa_conpu =  0 	#0.05(mM/s)
-	icc(0.5).Jmax_NaCa_conpu =  0.05 	#0.05(mM/s)
 	icc.Jmax_uni_conpu = 0 		#5000 mM/s
-	icc(0.5).Jmax_uni_conpu = 5000 		#5000 mM/s
-
 	icc.insert('ano1')
 	icc.g_Ano1_ano1 = 0	#20
-	icc(0.5).g_Ano1_ano1 = 20	#20
 	icc.cli = cli_
 	icc.clo = clo_
 	icc.ecl = ecl_
 
 	icc.insert('cacl')
 	icc.G_Cacl_cacl = 0	#10.1
-	icc(0.5).G_Cacl_cacl = 10.1	#10.1
 	icc.tau_act_Cacl_cacl = tau_act_Cacl
+
+
+	active_sites = [0.5]
+
+	area = 2*pi*icc.L*(icc.diam/2)
+	a = 1/(10*area)
+	print(a)
+
+	for i in active_sites:
+
+
+		icc(i).G_Na_Na= a*20		#20
+
+		icc(i).G_NSCC_nscc = a*12.15	#12.15
+
+		icc(i).G_ERG_ERG = a*2.5	#2.5
+
+		icc(i).G_bk_bk= a*(23+T_correction_BK) #23+T_correction_BK
+
+		icc(i).G_Kb_Kb=a*0.15	#.15
+
+		icc(i).G_Kv11_kv11=a*6.3   #6.3
+
+		icc(i).G_Ca_VDDR_vddr=a*3	#3
+
+		icc(i).G_Ca_Ltype_ltype=a*2 #2
+
+		icc(i).J_max_PMCA_pmca= 0.088464 #0.088464
+
+		icc(i).J_max_leak_concyto= J_max_leak	#0.01(mM/s) 
+
+		icc(i).J_max_leak_conpu= J_max_leak #0.01(mM/s) 
+
+		icc(i).Jmax_serca_conpu = 1.8333		# 1.8333	
+
+		icc(i).J_ERleak_conpu = 1.666667		# 1.666667	
+
+		icc(i).Jmax_IP3_conpu = 	50000		#50000  (1/s)
+
+		icc(i).Jmax_NaCa_conpu = 0.05 	#0.05(mM/s)
+
+		icc(i).Jmax_uni_conpu = 5000 		#5000 mM/s
+
+
+
+		icc(i).g_Ano1_ano1 = a*20	#20
+
+		icc(i).G_Cacl_cacl = a*10.1	#10.1
+
 
 def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG):
 
@@ -225,11 +264,12 @@ v_e4.record(icc(1)._ref_v)
 # vclamp.dur1 = tstop
 # vclamp.amp1=-50.0
 # vclamp.rs=.00001
-h.v_init = -70
+h.v_init = -80
 
 
 
 run_and_record(icc,*variables)
+print(icc.ena)
 
 
 plt.figure()

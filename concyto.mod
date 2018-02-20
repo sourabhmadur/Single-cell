@@ -20,7 +20,7 @@ PARAMETER {
 	P_cyto=0.7
 	Vol = 1.0e-12		(litre)
 	fc = 0.01  
-	J_max_leak = 0.01 	(mM/s)
+	J_max_leak = 0.01 	(1/s)
 	
 	
 }

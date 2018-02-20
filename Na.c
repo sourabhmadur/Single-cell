@@ -29,7 +29,6 @@ extern double hoc_Exp(double);
 #define nrn_jacob _nrn_jacob__Na
 #define nrn_state _nrn_state__Na
 #define _net_receive _net_receive__Na 
-#define _f_settables _f_settables__Na 
 #define settables settables__Na 
 #define states states__Na 
  
@@ -104,17 +103,9 @@ extern Memb_func* memb_func;
  "settables_Na", _hoc_settables,
  0, 0
 };
- 
-static void _check_settables(double*, Datum*, Datum*, _NrnThread*); 
-static void _check_table_thread(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt, int _type) {
-   _check_settables(_p, _ppvar, _thread, _nt);
- }
  /* declare global and static user variables */
-#define usetable usetable_Na
- double usetable = 1;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
- "usetable_Na", 0, 1,
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
@@ -127,7 +118,6 @@ static void _check_table_thread(double* _p, Datum* _ppvar, Datum* _thread, _NrnT
  static double f_Na0 = 0;
  /* connect global user variables to hoc */
  static DoubScal hoc_scdoub[] = {
- "usetable_Na", &usetable_Na,
  0,0
 };
  static DoubVec hoc_vdoub[] = {
@@ -207,7 +197,6 @@ extern void _cvode_abstol( Symbol**, double*, int);
  _mechtype = nrn_get_mechtype(_mechanism[1]);
      _nrn_setdata_reg(_mechtype, _setdata);
      _nrn_thread_reg(_mechtype, 2, _update_ion_pointer);
-     _nrn_thread_table_reg(_mechtype, _check_table_thread);
   hoc_register_prop_size(_mechtype, 13, 4);
   hoc_register_dparam_semantics(_mechtype, 0, "na_ion");
   hoc_register_dparam_semantics(_mechtype, 1, "na_ion");
@@ -220,8 +209,6 @@ extern void _cvode_abstol( Symbol**, double*, int);
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
- static double *_t_d_Na_inf;
- static double *_t_f_Na_inf;
 static int _reset;
 static char *modelname = "Na channel by madur";
 
@@ -229,12 +216,10 @@ static int error;
 static int _ninits = 0;
 static int _match_recurse=1;
 static void _modl_cleanup(){ _match_recurse=1;}
-static int _f_settables(_threadargsprotocomma_ double);
 static int settables(_threadargsprotocomma_ double);
  
 static int _ode_spec1(_threadargsproto_);
 /*static int _ode_matsol1(_threadargsproto_);*/
- static void _n_settables(_threadargsprotocomma_ double _lv);
  static int _slist1[2], _dlist1[2];
  static int states(_threadargsproto_);
  
@@ -260,58 +245,8 @@ static int _ode_spec1(_threadargsproto_);
    }
   return 0;
 }
- static double _mfac_settables, _tmin_settables;
-  static void _check_settables(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt) {
-  static int _maktable=1; int _i, _j, _ix = 0;
-  double _xi, _tmax;
-  if (!usetable) {return;}
-  if (_maktable) { double _x, _dx; _maktable=0;
-   _tmin_settables =  - 100.0 ;
-   _tmax =  100.0 ;
-   _dx = (_tmax - _tmin_settables)/5000.; _mfac_settables = 1./_dx;
-   for (_i=0, _x=_tmin_settables; _i < 5001; _x += _dx, _i++) {
-    _f_settables(_p, _ppvar, _thread, _nt, _x);
-    _t_d_Na_inf[_i] = d_Na_inf;
-    _t_f_Na_inf[_i] = f_Na_inf;
-   }
-  }
- }
-
- static int settables(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt, double _lv) { 
-#if 0
-_check_settables(_p, _ppvar, _thread, _nt);
-#endif
- _n_settables(_p, _ppvar, _thread, _nt, _lv);
- return 0;
- }
-
- static void _n_settables(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt, double _lv){ int _i, _j;
- double _xi, _theta;
- if (!usetable) {
- _f_settables(_p, _ppvar, _thread, _nt, _lv); return; 
-}
- _xi = _mfac_settables * (_lv - _tmin_settables);
- if (isnan(_xi)) {
-  d_Na_inf = _xi;
-  f_Na_inf = _xi;
-  return;
- }
- if (_xi <= 0.) {
- d_Na_inf = _t_d_Na_inf[0];
- f_Na_inf = _t_f_Na_inf[0];
- return; }
- if (_xi >= 5000.) {
- d_Na_inf = _t_d_Na_inf[5000];
- f_Na_inf = _t_f_Na_inf[5000];
- return; }
- _i = (int) _xi;
- _theta = _xi - (double)_i;
- d_Na_inf = _t_d_Na_inf[_i] + _theta*(_t_d_Na_inf[_i+1] - _t_d_Na_inf[_i]);
- f_Na_inf = _t_f_Na_inf[_i] + _theta*(_t_f_Na_inf[_i+1] - _t_f_Na_inf[_i]);
- }
-
  
-static int  _f_settables ( _threadargsprotocomma_ double _lv ) {
+static int  settables ( _threadargsprotocomma_ double _lv ) {
    d_Na_inf = 1.0 / ( 1.0 + exp ( - ( 47.0 + _lv ) / 4.8 ) ) ;
    f_Na_inf = 1.0 / ( 1.0 + exp ( ( 78.0 + _lv ) / ( 7.0 ) ) ) ;
     return 0; }
@@ -322,10 +257,6 @@ static void _hoc_settables(void) {
    if (_extcall_prop) {_p = _extcall_prop->param; _ppvar = _extcall_prop->dparam;}else{ _p = (double*)0; _ppvar = (Datum*)0; }
   _thread = _extcall_thread;
   _nt = nrn_threads;
- 
-#if 1
- _check_settables(_p, _ppvar, _thread, _nt);
-#endif
  _r = 1.;
  settables ( _p, _ppvar, _thread, _nt, *getarg(1) );
  hoc_retpushx(_r);
@@ -401,10 +332,6 @@ _cntml = _ml->_nodecount;
 _thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
-
-#if 0
- _check_settables(_p, _ppvar, _thread, _nt);
-#endif
 #if CACHEVEC
   if (use_cachevec) {
     _v = VEC_V(_ni[_iml]);
@@ -529,8 +456,6 @@ static void _initlists(){
   if (!_first) return;
  _slist1[0] = &(d_Na) - _p;  _dlist1[0] = &(Dd_Na) - _p;
  _slist1[1] = &(f_Na) - _p;  _dlist1[1] = &(Df_Na) - _p;
-   _t_d_Na_inf = makevector(5001*sizeof(double));
-   _t_f_Na_inf = makevector(5001*sizeof(double));
 _first = 0;
 }
 
