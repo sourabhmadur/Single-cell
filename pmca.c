@@ -44,11 +44,13 @@ extern double hoc_Exp(double);
 #define t _nt->_t
 #define dt _nt->_dt
 #define J_max_PMCA _p[0]
-#define ica _p[1]
-#define eca _p[2]
-#define cai _p[3]
-#define v _p[4]
-#define _g _p[5]
+#define Vol _p[1]
+#define a _p[2]
+#define ica _p[3]
+#define eca _p[4]
+#define cai _p[5]
+#define v _p[6]
+#define _g _p[7]
 #define _ion_cai	*_ppvar[0]._pval
 #define _ion_ica	*_ppvar[1]._pval
 #define _ion_dicadv	*_ppvar[2]._pval
@@ -97,8 +99,8 @@ extern Memb_func* memb_func;
  double F = 96.4846;
 #define P_cyto P_cyto_pmca
  double P_cyto = 0.7;
-#define Vol Vol_pmca
- double Vol = 1e-012;
+#define corrfactor corrfactor_pmca
+ double corrfactor = 10000;
 #define fc fc_pmca
  double fc = 0.01;
 #define k_PMCA k_PMCA_pmca
@@ -110,8 +112,9 @@ extern Memb_func* memb_func;
  static HocParmUnits _hoc_parm_units[] = {
  "k_PMCA_pmca", "millimolar",
  "F_pmca", "microcoulomb/nanomole",
- "Vol_pmca", "litre",
  "J_max_PMCA_pmca", "millimolar/sec",
+ "Vol_pmca", "lit",
+ "a_pmca", "um^2",
  "ica_pmca", "mA/cm2",
  0,0
 };
@@ -120,8 +123,8 @@ extern Memb_func* memb_func;
  "k_PMCA_pmca", &k_PMCA_pmca,
  "F_pmca", &F_pmca,
  "P_cyto_pmca", &P_cyto_pmca,
- "Vol_pmca", &Vol_pmca,
  "fc_pmca", &fc_pmca,
+ "corrfactor_pmca", &corrfactor_pmca,
  0,0
 };
  static DoubVec hoc_vdoub[] = {
@@ -138,6 +141,8 @@ static void  nrn_jacob(_NrnThread*, _Memb_list*, int);
  "6.2.0",
 "pmca",
  "J_max_PMCA_pmca",
+ "Vol_pmca",
+ "a_pmca",
  0,
  "ica_pmca",
  0,
@@ -150,11 +155,13 @@ extern Prop* need_memb(Symbol*);
 static void nrn_alloc(Prop* _prop) {
 	Prop *prop_ion;
 	double *_p; Datum *_ppvar;
- 	_p = nrn_prop_data_alloc(_mechtype, 6, _prop);
+ 	_p = nrn_prop_data_alloc(_mechtype, 8, _prop);
  	/*initialize range parameters*/
  	J_max_PMCA = 0.088464;
+ 	Vol = 1e-012;
+ 	a = 1000;
  	_prop->param = _p;
- 	_prop->param_size = 6;
+ 	_prop->param_size = 8;
  	_ppvar = nrn_prop_datum_alloc(_mechtype, 3, _prop);
  	_prop->dparam = _ppvar;
  	/*connect ionic variables to this model*/
@@ -182,12 +189,12 @@ extern void _cvode_abstol( Symbol**, double*, int);
  _mechtype = nrn_get_mechtype(_mechanism[1]);
      _nrn_setdata_reg(_mechtype, _setdata);
      _nrn_thread_reg(_mechtype, 2, _update_ion_pointer);
-  hoc_register_prop_size(_mechtype, 6, 3);
+  hoc_register_prop_size(_mechtype, 8, 3);
   hoc_register_dparam_semantics(_mechtype, 0, "ca_ion");
   hoc_register_dparam_semantics(_mechtype, 1, "ca_ion");
   hoc_register_dparam_semantics(_mechtype, 2, "ca_ion");
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 pmca C:/Users/admin/Desktop/single cell/pmca.mod\n");
+ 	ivoc_help("help ?1 pmca C:/Users/sourabh/Desktop/Single-cell/pmca.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
@@ -237,7 +244,7 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
 }
 
 static double _nrn_current(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt, double _v){double _current=0.;v=_v;{ {
-   ica = ( 2.0 * F * 1.0e12 * Vol * P_cyto ) * J_max_PMCA * ( 1.0 / ( 1.0 + ( k_PMCA / cai ) ) ) ;
+   ica = ( ( 2.0 * F * Vol * P_cyto ) * J_max_PMCA * ( 1.0 / ( 1.0 + ( k_PMCA / cai ) ) ) ) / ( ( corrfactor ) * a ) ;
    }
  _current += ica;
 

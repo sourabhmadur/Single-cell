@@ -168,7 +168,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
   hoc_register_dparam_semantics(_mechtype, 1, "k_ion");
   hoc_register_dparam_semantics(_mechtype, 2, "k_ion");
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 Kb C:/Users/admin/Desktop/single cell/Kb.mod\n");
+ 	ivoc_help("help ?1 Kb C:/Users/sourabh/Desktop/Single-cell/Kb.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }

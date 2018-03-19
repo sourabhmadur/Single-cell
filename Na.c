@@ -110,6 +110,8 @@ extern Memb_func* memb_func;
 };
  static HocParmUnits _hoc_parm_units[] = {
  "G_Na_Na", "mho/cm2",
+ "tau_d_Na_Na", "ms",
+ "tau_f_Na_Na", "ms",
  "ina_Na", "mA/cm2",
  0,0
 };
@@ -205,7 +207,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 Na C:/Users/admin/Desktop/single cell/Na.mod\n");
+ 	ivoc_help("help ?1 Na C:/Users/sourabh/Desktop/Single-cell/Na.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }

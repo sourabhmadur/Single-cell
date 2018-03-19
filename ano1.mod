@@ -21,11 +21,11 @@ PARAMETER {
 }
 
 ASSIGNED { 
-    v (mV)
-	v_init(mV)
-    ecl (mV)
-    icl (mA/cm2)
-	t1 t2 t3 tau_Ano1
+    v 	(mV)
+	
+    ecl 	(mV)
+    icl 	(mA/cm2)
+	t1 t2 t3 tau_Ano1		
 	EC_50
 	O_Ano1_inf
 	capui	(mM)
@@ -60,8 +60,8 @@ PROCEDURE settables(v (mV),capui(mM)) {
 	t1          =   0.08163*exp(-0.57*capui)
     t2          =   0.07617*exp(-0.05374*capui)
 	t3          =   70.3*exp(0.153*capui)
-	tau_Ano1 =   t1 +(t2*exp(v/t3))
-	EC_50       =   EC_50_i*exp(-k_C*v_init)
+	tau_Ano1 =  ( t1 +(t2*exp(v/t3))  )*1.0e3		:this is the corrention from seconds to ms
+	EC_50       =   EC_50_i*exp(-k_C*v)
 	O_Ano1_inf  =   1/((1+exp((V_h-v)*k_V))*(1+((EC_50/capui)^2)))
 }
 

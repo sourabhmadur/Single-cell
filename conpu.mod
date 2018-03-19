@@ -16,31 +16,31 @@ NEURON {
 	RANGE Jmax_IP3
 	RANGE Jmax_NaCa 
 	RANGE J_ERleak
-	RANGE Jmax_uni
+	RANGE Jmax_uni, Vol
 }
 
 PARAMETER {
     
 		
 	P_cyto=0.7
-	Vol = 1.0e-12		(litre)
+	Vol = 1.0e-12		(umm^3)
 	fc = 0.01   
-	J_max_leak = 0.01	(mM/s)
+	J_max_leak = 0.00001	(mM/ms)
 	
 	:ER Ca Mechanism parameters
 	P_PU = 0.001 
 	Per = 0.10
 	fe=0.01	
-	Jmax_serca = 1.8333	(mM/s)
+	Jmax_serca = 1.8333e-3	(mM/ms)
 	k_serca = 0.00042  (mM)	
-	Jmax_IP3 = 50000	(1/s)
-	J_ERleak = 1.666667	(1/s)
+	Jmax_IP3 = 50000e-3	(1/ms)
+	J_ERleak = 1.666667e-3	(1/ms)
 	IP3 =0.0006       (millimolar) : baseline IP3 concentration
 	d_IP3 = 0.00025   (millimolar)
 	
 	d_ACT = 0.001        (millimolar)
 	d_INH = 0.0014       (millimolar)
-	tauh = 4.0           (s)
+	tauh = 4000           (ms)
 	
 	:Mitochondria mechanism parameters
 	F = 96.4846         (microcoulomb/nanomole)
@@ -59,7 +59,7 @@ PARAMETER {
 	fm = 0.0003
 	Pmito = 0.12871
 	:uniporter 
-	Jmax_uni = 5000     (mM/s)
+	Jmax_uni = 5     (mM/ms)
 	naa = 2.8
 	K_act = 0.00038		(mM)
 	conc = 0.001        (mM) : correcting units of Juni
@@ -82,7 +82,7 @@ STATE {
 }
 
 BREAKPOINT {
-    SOLVE states METHOD cnexp
+    SOLVE states METHOD derivimplicit
 	
 	}
 
@@ -97,7 +97,7 @@ INITIAL {
 			  
 DERIVATIVE states {  
 
-capui' = fc*(((J_NaCa(cami)-J_uni(cami))*((Vol*Pmito)/(Vol*P_PU)))+((J_ERout(capui,caeri,h)-J_SERCA(capui))*((Vol*Per)/(Vol*P_PU)))-J_leak(capui,cai)*((Vol*P_cyto)/(Vol*P_PU)))		
+capui' = fc*(  ((J_NaCa(cami)-J_uni(cami))*((Vol*Pmito)/(Vol*P_PU))) +  ((J_ERout(capui,caeri,h)-J_SERCA(capui))*((Vol*Per)/(Vol*P_PU))) - J_leak(capui,cai)*((Vol*P_cyto)/(Vol*P_PU)))		
 caeri' = fe*( J_SERCA(capui) - J_ERout(capui,caeri,h) )
 cami' = fm*(J_uni(cami)- J_NaCa(cami))  
 

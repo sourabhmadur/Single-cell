@@ -48,18 +48,17 @@ extern double hoc_Exp(double);
 #define g_Ano1 _p[0]
 #define icl _p[1]
 #define O_Ano1 _p[2]
-#define v_init _p[3]
-#define ecl _p[4]
-#define t1 _p[5]
-#define t2 _p[6]
-#define t3 _p[7]
-#define tau_Ano1 _p[8]
-#define EC_50 _p[9]
-#define O_Ano1_inf _p[10]
-#define capui _p[11]
-#define DO_Ano1 _p[12]
-#define v _p[13]
-#define _g _p[14]
+#define ecl _p[3]
+#define t1 _p[4]
+#define t2 _p[5]
+#define t3 _p[6]
+#define tau_Ano1 _p[7]
+#define EC_50 _p[8]
+#define O_Ano1_inf _p[9]
+#define capui _p[10]
+#define DO_Ano1 _p[11]
+#define v _p[12]
+#define _g _p[13]
 #define _ion_ecl	*_ppvar[0]._pval
 #define _ion_icl	*_ppvar[1]._pval
 #define _ion_dicldv	*_ppvar[2]._pval
@@ -174,11 +173,11 @@ extern Prop* need_memb(Symbol*);
 static void nrn_alloc(Prop* _prop) {
 	Prop *prop_ion;
 	double *_p; Datum *_ppvar;
- 	_p = nrn_prop_data_alloc(_mechtype, 15, _prop);
+ 	_p = nrn_prop_data_alloc(_mechtype, 14, _prop);
  	/*initialize range parameters*/
  	g_Ano1 = 20;
  	_prop->param = _p;
- 	_prop->param_size = 15;
+ 	_prop->param_size = 14;
  	_ppvar = nrn_prop_datum_alloc(_mechtype, 5, _prop);
  	_prop->dparam = _ppvar;
  	/*connect ionic variables to this model*/
@@ -216,7 +215,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
  _mechtype = nrn_get_mechtype(_mechanism[1]);
      _nrn_setdata_reg(_mechtype, _setdata);
      _nrn_thread_reg(_mechtype, 2, _update_ion_pointer);
-  hoc_register_prop_size(_mechtype, 15, 5);
+  hoc_register_prop_size(_mechtype, 14, 5);
   hoc_register_dparam_semantics(_mechtype, 0, "cl_ion");
   hoc_register_dparam_semantics(_mechtype, 1, "cl_ion");
   hoc_register_dparam_semantics(_mechtype, 2, "cl_ion");
@@ -225,7 +224,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 ano1 C:/Users/admin/Desktop/single cell/ano1.mod\n");
+ 	ivoc_help("help ?1 ano1 C:/Users/sourabh/Desktop/Single-cell/ano1.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
@@ -267,8 +266,8 @@ static int  settables ( _threadargsprotocomma_ double _lv , double _lcapui ) {
    t1 = 0.08163 * exp ( - 0.57 * _lcapui ) ;
    t2 = 0.07617 * exp ( - 0.05374 * _lcapui ) ;
    t3 = 70.3 * exp ( 0.153 * _lcapui ) ;
-   tau_Ano1 = t1 + ( t2 * exp ( _lv / t3 ) ) ;
-   EC_50 = EC_50_i * exp ( - k_C * v_init ) ;
+   tau_Ano1 = ( t1 + ( t2 * exp ( _lv / t3 ) ) ) * 1.0e3 ;
+   EC_50 = EC_50_i * exp ( - k_C * _lv ) ;
    O_Ano1_inf = 1.0 / ( ( 1.0 + exp ( ( V_h - _lv ) * k_V ) ) * ( 1.0 + ( pow( ( EC_50 / _lcapui ) , 2.0 ) ) ) ) ;
     return 0; }
  

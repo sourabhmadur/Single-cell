@@ -45,24 +45,25 @@ extern double hoc_Exp(double);
  
 #define t _nt->_t
 #define dt _nt->_dt
-#define J_max_leak _p[0]
-#define Jmax_serca _p[1]
-#define Jmax_IP3 _p[2]
-#define J_ERleak _p[3]
-#define Jmax_NaCa _p[4]
-#define Jmax_uni _p[5]
-#define h _p[6]
-#define cai _p[7]
-#define FoRT _p[8]
-#define capui _p[9]
-#define Dcapui _p[10]
-#define caeri _p[11]
-#define Dcaeri _p[12]
-#define cami _p[13]
-#define Dcami _p[14]
-#define Dh _p[15]
-#define v _p[16]
-#define _g _p[17]
+#define Vol _p[0]
+#define J_max_leak _p[1]
+#define Jmax_serca _p[2]
+#define Jmax_IP3 _p[3]
+#define J_ERleak _p[4]
+#define Jmax_NaCa _p[5]
+#define Jmax_uni _p[6]
+#define h _p[7]
+#define cai _p[8]
+#define FoRT _p[9]
+#define capui _p[10]
+#define Dcapui _p[11]
+#define caeri _p[12]
+#define Dcaeri _p[13]
+#define cami _p[14]
+#define Dcami _p[15]
+#define Dh _p[16]
+#define v _p[17]
+#define _g _p[18]
 #define _ion_cai	*_ppvar[0]._pval
 #define _ion_caeri	*_ppvar[1]._pval
 #define _style_caer	*((int*)_ppvar[2]._pvoid)
@@ -164,8 +165,6 @@ extern Memb_func* memb_func;
  double P_cyto = 0.7;
 #define R R_conpu
  double R = 8.3144;
-#define Vol Vol_conpu
- double Vol = 1e-012;
 #define b b_conpu
  double b = 0.5;
 #define conc conc_conpu
@@ -193,19 +192,18 @@ extern Memb_func* memb_func;
 #define n n_conpu
  double n = 2;
 #define tauh tauh_conpu
- double tauh = 4;
+ double tauh = 4000;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
- "Vol_conpu", "litre",
  "k_serca_conpu", "mM",
  "IP3_conpu", "millimolar",
  "d_IP3_conpu", "millimolar",
  "d_ACT_conpu", "millimolar",
  "d_INH_conpu", "millimolar",
- "tauh_conpu", "s",
+ "tauh_conpu", "ms",
  "F_conpu", "microcoulomb/nanomole",
  "deltaPsi_star_conpu", "mV",
  "K_Na_conpu", "millimolar",
@@ -215,12 +213,13 @@ extern Memb_func* memb_func;
  "K_act_conpu", "mM",
  "conc_conpu", "mM",
  "K_trans_conpu", "mM",
- "J_max_leak_conpu", "mM/s",
- "Jmax_serca_conpu", "mM/s",
- "Jmax_IP3_conpu", "1/s",
- "J_ERleak_conpu", "1/s",
+ "Vol_conpu", "umm^3",
+ "J_max_leak_conpu", "mM/ms",
+ "Jmax_serca_conpu", "mM/ms",
+ "Jmax_IP3_conpu", "1/ms",
+ "J_ERleak_conpu", "1/ms",
  "Jmax_NaCa_conpu", "mM/s",
- "Jmax_uni_conpu", "mM/s",
+ "Jmax_uni_conpu", "mM/ms",
  0,0
 };
  static double cami0 = 0;
@@ -231,7 +230,6 @@ extern Memb_func* memb_func;
  /* connect global user variables to hoc */
  static DoubScal hoc_scdoub[] = {
  "P_cyto_conpu", &P_cyto_conpu,
- "Vol_conpu", &Vol_conpu,
  "fc_conpu", &fc_conpu,
  "P_PU_conpu", &P_PU_conpu,
  "Per_conpu", &Per_conpu,
@@ -281,6 +279,7 @@ static void _ode_matsol(_NrnThread*, _Memb_list*, int);
  static const char *_mechanism[] = {
  "6.2.0",
 "conpu",
+ "Vol_conpu",
  "J_max_leak_conpu",
  "Jmax_serca_conpu",
  "Jmax_IP3_conpu",
@@ -302,16 +301,17 @@ extern Prop* need_memb(Symbol*);
 static void nrn_alloc(Prop* _prop) {
 	Prop *prop_ion;
 	double *_p; Datum *_ppvar;
- 	_p = nrn_prop_data_alloc(_mechtype, 18, _prop);
+ 	_p = nrn_prop_data_alloc(_mechtype, 19, _prop);
  	/*initialize range parameters*/
- 	J_max_leak = 0.01;
- 	Jmax_serca = 1.8333;
- 	Jmax_IP3 = 50000;
- 	J_ERleak = 1.66667;
+ 	Vol = 1e-012;
+ 	J_max_leak = 1e-005;
+ 	Jmax_serca = 0.0018333;
+ 	Jmax_IP3 = 50;
+ 	J_ERleak = 0.00166667;
  	Jmax_NaCa = 0.05;
- 	Jmax_uni = 5000;
+ 	Jmax_uni = 5;
  	_prop->param = _p;
- 	_prop->param_size = 18;
+ 	_prop->param_size = 19;
  	_ppvar = nrn_prop_datum_alloc(_mechtype, 8, _prop);
  	_prop->dparam = _ppvar;
  	/*connect ionic variables to this model*/
@@ -369,7 +369,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
      _nrn_thread_reg(_mechtype, 1, _thread_mem_init);
      _nrn_thread_reg(_mechtype, 0, _thread_cleanup);
      _nrn_thread_reg(_mechtype, 2, _update_ion_pointer);
-  hoc_register_prop_size(_mechtype, 18, 8);
+  hoc_register_prop_size(_mechtype, 19, 8);
   hoc_register_dparam_semantics(_mechtype, 0, "ca_ion");
   hoc_register_dparam_semantics(_mechtype, 1, "caer_ion");
   hoc_register_dparam_semantics(_mechtype, 2, "#caer_ion");
@@ -382,7 +382,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 conpu C:/Users/admin/Desktop/single cell/conpu.mod\n");
+ 	ivoc_help("help ?1 conpu C:/Users/sourabh/Desktop/Single-cell/conpu.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }

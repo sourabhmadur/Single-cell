@@ -12,9 +12,9 @@ NEURON {
 }
 
 PARAMETER {
-    G_Na  = 20 (mho/cm2)
-	tau_d_Na = 1
-	tau_f_Na =5
+    G_Na  = 20        (mho/cm2)
+	tau_d_Na = 1       (ms)
+	tau_f_Na =5        (ms)
 }
 
 ASSIGNED { 

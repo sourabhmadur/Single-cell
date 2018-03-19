@@ -8,7 +8,7 @@ UNITS {
 NEURON {
     SUFFIX pmca
     USEION ca READ cai WRITE ica
-    RANGE J_max_PMCA,ica
+    RANGE J_max_PMCA,ica,Vol,a
 	
 }
 
@@ -17,9 +17,10 @@ PARAMETER {
 	k_PMCA = 0.000298	(millimolar)
 	F = 96.4846 	 	(microcoulomb/nanomole)  		
 	P_cyto=0.7
-	Vol = 1.0e-12		(litre)
+	Vol = 1.0e-12		(lit)		
 	fc = 0.01   
-	
+	corrfactor = 1.0e4		:page 13 of the notebook
+	a=1000			(um^2)
 	
 	}
 
@@ -31,8 +32,7 @@ ASSIGNED {
     }
 
 BREAKPOINT {
-    ica = (2*F*1.0e12*Vol*P_cyto)*J_max_PMCA*(1.0/(1.0+(k_PMCA/cai)))
-	
+    ica = ( (2*F*Vol*P_cyto)*J_max_PMCA*(1.0/(1.0+(k_PMCA/cai))) )/ ((corrfactor)*a)
 	}
 
 

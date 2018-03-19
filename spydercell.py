@@ -9,7 +9,7 @@ from math import pi
 # from run import *
 import numpy as np
 
-tstop = 8000
+tstop = 500
 h.tstop = tstop
 h.dt=0.1
 h.celsius = (T-273)
@@ -29,7 +29,7 @@ def define_geometry(icc):
 	
 	icc.Ra = 50		#50
 
-	
+	area = 4*100*8+2*20*8
 	icc.cm = .025*(10**5)/h.area(0.5,sec=icc)
 	print('capacitance=',icc.cm)
 
@@ -83,20 +83,14 @@ def insert_mechanisms(icc):
 
 	icc.insert('pmca')
 	icc.J_max_PMCA_pmca= 0 #0.088464
-	icc.Vol_pmca = pi*((icc.diam/2)**2)*icc.L
-	icc.a_pmca = h.area(0.5,sec=icc)		#area
 
 	time_corr = 10**(-3)
 	icc.insert('concyto')
 	J_max_leak=0.01*time_corr
-	icc.J_max_leak_concyto= 0	#0.01(1/s) 
-	icc.Vol_concyto = pi*((icc.diam/2)**2)*icc.L
-	icc.a_concyto = h.area(0.5,sec=icc)		#area
-
-
+	icc.J_max_leak_concyto= 0	#0.01(mM/s) 
+	icc.Vol_concyto = pi*((icc.diam/2)**2)*icc.L 
 
 	icc.insert('conpu')
-	icc.Vol_conpu = pi*((icc.diam/2)**2)*icc.L
 	icc.J_max_leak_conpu= 0 #0.01(mM/s) 
 	icc.Jmax_serca_conpu = 0		# 1.8333	
 	icc.J_ERleak_conpu = 0		# 1.666667	
@@ -117,7 +111,7 @@ def insert_mechanisms(icc):
 
 
 	active_sites = [0.5]
-	a=1/(10*h.area(0.5))	
+	a=1/(10*h.area(0.5))
 	
 
 	for i in active_sites:
@@ -125,7 +119,7 @@ def insert_mechanisms(icc):
 		
 		icc(i).G_Na_Na= a*20			#.0022		#this is the tuned value  #20 - total conductance
 
-		icc(i).G_NSCC_nscc = a*12.15	#12.15
+		icc(i).G_NSCC_nscc = a*0	#12.15
 
 		icc(i).G_ERG_ERG = a*2.5	#2.5
 
@@ -140,7 +134,7 @@ def insert_mechanisms(icc):
 		icc(i).G_Ca_Ltype_ltype=a*2 #2
 
 
-		icc(i).J_max_PMCA_pmca= 0.088464 #0.088464
+		icc(i).J_max_PMCA_pmca= 0.088464*time_corr #0.088464
 
 		icc(i).J_max_leak_concyto= J_max_leak	#0.01(mM/s) 
 
@@ -174,7 +168,7 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	# icl.record(icc(.5)._ref_icl)
 	# ica.record(icc(.5)._ref_ica)
 	# ins.record(icc(.5)._ref_i_nscc)
-	eca.record(icc(.5)._ref_eca)
+	# eca.record(icc(.5)._ref_eca)
 	cai.record(icc(.5)._ref_cai)
 	# cao.record(icc(.5)._ref_cao)
 	# ek.record(icc(.5)._ref_ek)
@@ -184,7 +178,7 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	# cli.record(icc(.5)._ref_cli)
 	# clo.record(icc(.5)._ref_clo)
 	# oano.record(icc(.5)._ref_O_Ano1_ano1)
-	ecl.record(icc(.5)._ref_ecl)
+	# ecl.record(icc(.5)._ref_ecl)
 	# ena.record(icc(.5)._ref_ena)
 	
 	ica_vddr.record(icc(.5)._ref_ica_vddr)
@@ -194,9 +188,9 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	ik_kv11.record(icc(.5)._ref_ik_kv11)
 	ik_bk.record(icc(.5)._ref_ik_bk)
 	ica_ltype.record(icc(.5)._ref_ica_ltype)
-	i_nscc.record(icc(.5)._ref_i_nscc)
+	# i_nscc.record(icc(.5)._ref_i_nscc)
 	ik_Kb.record(icc(.5)._ref_ik_Kb)
-	ica_pmca.record(icc(.5)._ref_ica_pmca)
+	# ica_pmca.record(icc(.5)._ref_ica_pmca)
 	ik_ERG.record(icc(.5)._ref_ik_ERG)
 
 	h.run()
@@ -270,11 +264,11 @@ v_e4.record(icc(1)._ref_v)
 
 
 
-# vclamp = h.SEClamp(icc(0.5))
-# vclamp.dur1 = tstop
-# vclamp.amp1=-50.0
-# vclamp.rs=.00001
-h.v_init = -70
+vclamp = h.SEClamp(icc(0.5))
+vclamp.dur1 = tstop
+vclamp.amp1=-50.0
+vclamp.rs=.00001
+h.v_init = -80
 
 
 
@@ -291,23 +285,17 @@ ik_bk = h.area(0.5)*10*np.array(ik_bk.to_python())
 ica_ltype = h.area(0.5)*10*np.array(ica_ltype.to_python())
 icl_cacl = h.area(0.5)*10*np.array(icl_cacl.to_python())
 icl_ano1 = h.area(0.5)*10*np.array(icl_ano1.to_python())
-i_nscc = h.area(0.5)*10*np.array(i_nscc.to_python())
-ica_pmca = h.area(0.5)*10*np.array(ica_pmca.to_python())
 
 
 cai_vddr = np.array(cai.to_python())
 capui = np.array(capui.to_python())
-caeri = np.array(caeri.to_python())
-
-
-eca = np.array(eca.to_python())
 # ik = ik.to_python()
 
 # ina_new = [i * (h.area(0.5)*10) for i in ina]
 # ik_new = [j * (h.area(0.5)*10) for j in ik]
 
-plt.figure()
-plt.plot(t,v , label = 'v(0.5)', color= 'red')
+# plt.figure()
+# plt.plot(t,v , label = 'v(0.5)', color= 'red')
 # # plt.plot(t,v_e , label = 'v(0.6)', color= 'blue')
 # # plt.plot(t,v_e1 , label = 'v(0.7)', color= 'green')
 # # plt.plot(t,v_e2 , label = 'v(0.8)', color= 'yellow')
@@ -317,36 +305,29 @@ plt.plot(t,v , label = 'v(0.5)', color= 'red')
 # plt.legend(loc = 'upper right')
 
 # plt.figure(2)
-
 # plt.plot(t,ina*10)
+
 
 # plt.show()
 #print(icc.tau_f_Na_Na, tau_f_Na_Na)
 
-# plt.plot(t,ina, label = 'i_na')
-# plt.plot(t,ik_ERG, label = 'i_erg')
-# plt.plot(t,ik_Kb, label = 'i_kb')
-# plt.plot(t,ik_bk, label = 'ik_bk')
-
-
-# plt.plot(t,ik_kv11, label = 'i_kv11')
-# plt.plot(t,ica_vddr, label = 'i_vddr')
+# plt.plot(t,ina)
+# plt.plot(t,ik_ERG)
+# plt.plot(t,ik_Kb)
+# plt.plot(t,ik_kv11)
+# plt.plot(t,ica_vddr)
 
 # plt.plot(t,cai)
 # plt.plot(t,capui)
-# plt.plot(t,caeri)
-
-# plt.plot(ecl)
-# plt.plot(eca)
-
-# plt.plot(t,ik_bk, label = 'i_na')
-# plt.plot(t,ica_ltype, label = 'i_ltype')
-# plt.plot(t,icl_cacl, label = 'i_cacl')
 
 
-# plt.plot(t,icl_ano1, label = 'i_ano1')
-# plt.plot(t,i_nscc, label = 'i_nscc')
-# plt.plot(t,ica_pmca, label = 'i_pmca')
+# plt.plot(t,ik_bk)
+# plt.plot(t,ica_ltype)
+# plt.plot(t,icl_cacl)
+plt.plot(t,icl_ano1)
+
+
+
 
 plt.show()
 
