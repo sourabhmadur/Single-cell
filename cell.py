@@ -9,7 +9,7 @@ from math import pi
 # from run import *
 import numpy as np
 
-tstop = 8000
+tstop = 60000
 h.tstop = tstop
 h.dt=0.1
 h.celsius = (T-273)
@@ -117,13 +117,13 @@ def insert_mechanisms(icc):
 
 
 	active_sites = [0.5]
-	a=1/(10*h.area(0.5))	
+	a=1/(10*h.area(0.5))			# conversion factor for conductances - page 11
 	
 
 	for i in active_sites:
 
 		
-		icc(i).G_Na_Na= a*20			#.0022		#this is the tuned value  #20 - total conductance
+		icc(i).G_Na_Na= a*20			#20		
 
 		icc(i).G_NSCC_nscc = a*12.15	#12.15
 
@@ -163,6 +163,8 @@ def insert_mechanisms(icc):
 		icc(i).G_Cacl_cacl = a*10.1	#10.1
 
 
+
+
 def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG):
 
 
@@ -199,7 +201,8 @@ def run_and_record(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cl
 	ica_pmca.record(icc(.5)._ref_ica_pmca)
 	ik_ERG.record(icc(.5)._ref_ik_ERG)
 
-	h.run()
+	
+
 
 
 
@@ -241,8 +244,11 @@ ik_Kb= h.Vector()
 ica_pmca= h.Vector() 
 ik_ERG= h.Vector()
 
+
+
 variables = [v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG]
-# v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG = runThisAlready(icc,v,ina,t,ik,ica,icl,eca,ins,cai,cao,ek,capui,caeri,cami,cli,clo,oano,ecl,ena,ica_vddr,icl_ano1, icl_cacl, ina_Na, ik_kv11, ik_bk, ica_ltype, i_nscc, ik_Kb, ica_pmca, ik_ERG)
+
+
 
 
 
@@ -250,71 +256,101 @@ icc = h.Section(name='icc')
 define_geometry(icc)
 insert_mechanisms(icc)
 
-# icc1 = h.Section(name='icc1')
-# icc1.nseg=1001
-# icc1.insert('pas')
-# icc1.L = 5000
-# icc1.diam=1
-# icc1.connect(icc(1))
-# icc1.cm=25
-v_e = h.Vector()
-v_e1 = h.Vector()  
-v_e2 = h.Vector()
-v_e3 = h.Vector()
-v_e4 = h.Vector()
-v_e.record(icc(0.6)._ref_v)
-v_e1.record(icc(0.7)._ref_v)
-v_e2.record(icc(.8)._ref_v)
-v_e3.record(icc(.9)._ref_v)
-v_e4.record(icc(1)._ref_v)
+
+h.v_init = -70
+run_and_record(icc,*variables)
 
 
+
+
+
+# v_e = h.Vector()
+# v_e1 = h.Vector()  
+# v_e2 = h.Vector()
+# v_e3 = h.Vector()
+# v_e4 = h.Vector()
+# v_e.record(icc(0.6)._ref_v)
+# v_e1.record(icc(0.7)._ref_v)
+# v_e2.record(icc(.8)._ref_v)
+# v_e3.record(icc(.9)._ref_v)
+# v_e4.record(icc(1)._ref_v)
+
+
+
+#####----Voltage clamp for testing the individual channels
 
 # vclamp = h.SEClamp(icc(0.5))
 # vclamp.dur1 = tstop
 # vclamp.amp1=-50.0
 # vclamp.rs=.00001
-h.v_init = -70
 
 
 
-run_and_record(icc,*variables)
-
-t = np.array(t.to_python())
-ina = h.area(0.5)*10*np.array(ina.to_python())
-ik = h.area(0.5)*10*np.array(ik.to_python())
-ik_ERG = h.area(0.5)*10*np.array(ik_ERG.to_python())
-ik_Kb = h.area(0.5)*10*np.array(ik_Kb.to_python())
-ik_kv11 = h.area(0.5)*10*np.array(ik_kv11.to_python())
-ica_vddr = h.area(0.5)*10*np.array(ica_vddr.to_python())
-ik_bk = h.area(0.5)*10*np.array(ik_bk.to_python())
-ica_ltype = h.area(0.5)*10*np.array(ica_ltype.to_python())
-icl_cacl = h.area(0.5)*10*np.array(icl_cacl.to_python())
-icl_ano1 = h.area(0.5)*10*np.array(icl_ano1.to_python())
-i_nscc = h.area(0.5)*10*np.array(i_nscc.to_python())
-ica_pmca = h.area(0.5)*10*np.array(ica_pmca.to_python())
 
 
-cai_vddr = np.array(cai.to_python())
-capui = np.array(capui.to_python())
-caeri = np.array(caeri.to_python())
+####--------variables for total current
+
+# t = np.array(t.to_python())
+
+# ina = h.area(0.5)*10*np.array(ina.to_python())
+# ik = h.area(0.5)*10*np.array(ik.to_python())
+# ik_ERG = h.area(0.5)*10*np.array(ik_ERG.to_python())
+# ik_Kb = h.area(0.5)*10*np.array(ik_Kb.to_python())
+# ik_kv11 = h.area(0.5)*10*np.array(ik_kv11.to_python())
+# ica_vddr = h.area(0.5)*10*np.array(ica_vddr.to_python())
+# ik_bk = h.area(0.5)*10*np.array(ik_bk.to_python())
+# ica_ltype = h.area(0.5)*10*np.array(ica_ltype.to_python())
+# icl_cacl = h.area(0.5)*10*np.array(icl_cacl.to_python())
+# icl_ano1 = h.area(0.5)*10*np.array(icl_ano1.to_python())
+# i_nscc = h.area(0.5)*10*np.array(i_nscc.to_python())
+# ica_pmca = h.area(0.5)*10*np.array(ica_pmca.to_python())
 
 
-eca = np.array(eca.to_python())
-# ik = ik.to_python()
+# cai_vddr = np.array(cai.to_python())
+# capui = np.array(capui.to_python())
+# caeri = np.array(caeri.to_python())
 
-# ina_new = [i * (h.area(0.5)*10) for i in ina]
-# ik_new = [j * (h.area(0.5)*10) for j in ik]
 
-plt.figure()
-plt.plot(t,v , label = 'v(0.5)', color= 'red')
-# # plt.plot(t,v_e , label = 'v(0.6)', color= 'blue')
-# # plt.plot(t,v_e1 , label = 'v(0.7)', color= 'green')
-# # plt.plot(t,v_e2 , label = 'v(0.8)', color= 'yellow')
-# # plt.plot(t,v_e3 , label = 'v(0.9)', color= 'black')
-# # plt.plot(t,v_e4 , label = 'v(1)', color= 'brown')
+# eca = np.array(eca.to_python())
 
-# plt.legend(loc = 'upper right')
+tableau20 = [(31, 119, 180), (174, 199, 232), (255, 127, 14), (255, 187, 120),
+             (44, 160, 44), (152, 223, 138), (214, 39, 40), (255, 152, 150),
+             (148, 103, 189), (197, 176, 213), (140, 86, 75), (196, 156, 148),
+             (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
+             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
+for i in range(len(tableau20)):
+    r, g, b = tableau20[i]
+    tableau20[i] = (r / 255., g / 255., b / 255.)
+
+###--------- plotting by varying mitochondrial volume
+# p_mito = [0.12871, 0.12871*1.2 , 0.12871*0.8]
+# plt.figure(1)
+# for p in p_mito:
+	
+# 	icc.Pmito_conpu = p
+# 	h.run()
+# 	plt.plot(t,v ,  label = 'fraction = '+ str(p/0.12871))
+# 	plt.xlabel('time(ms)')
+# 	plt.ylabel('membrane voltage(mV)')
+
+
+###--------- plotting by varying IP3
+ip3 = [0.0005,0.00058, 0.00062 , 0.00068]
+plt.figure(1)
+for p in range(len(ip3)):
+	
+	icc.IP3_conpu = ip3[p]
+	h.run()
+	plt.plot(t,v ,  label = 'IP3 con = '+ str(ip3[p]*1000)+ ' uM' )
+	plt.xlabel('time(ms)')
+	plt.ylabel('membrane voltage(mV)')
+	plt.title('Frequency Variation of ICC with intracellular IP3 concentration')
+
+
+
+
+
+plt.legend(loc = 'upper right')
 
 # plt.figure(2)
 

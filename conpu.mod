@@ -17,6 +17,7 @@ NEURON {
 	RANGE Jmax_NaCa 
 	RANGE J_ERleak
 	RANGE Jmax_uni, Vol
+	RANGE Pmito, IP3
 }
 
 PARAMETER {
