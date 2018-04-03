@@ -7,7 +7,7 @@ from math import pi
 import random
 
 
-tstop = .3*1000
+tstop = 20*1000
 h.tstop=tstop
 h.dt=0.1
 h.celsius = (T-273)
@@ -211,7 +211,7 @@ def  set_recording_vectors(cells):
 h.v_init = -70
 
 # cells[0](0.5).v = -90
-ncells = [7]
+ncells = [4]
 
 for N_cells in ncells:
 	gap_junctions_f,gap_junctions_b,cells = initialize_network(N_cells)
@@ -223,6 +223,7 @@ for N_cells in ncells:
 	ip3 = [(0.00058 + random.randrange(10)*0.00001) for x in range(N_cells)]
 	for i in range(N_cells):
 		cells[i].IP3_conpu = ip3[i]
+	cells[0].IP3_conpu = 0
 	h.run()
 	
 	# for i in range(N_cells):

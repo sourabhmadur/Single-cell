@@ -7,7 +7,7 @@ from math import pi
 import random
 
 
-tstop = 30*1000
+tstop = 160*1000
 h.tstop=tstop
 h.dt=0.1
 h.celsius = (T-273)
@@ -194,8 +194,8 @@ def initialize_network(ncells):
 		gap_junctions_b_x.append(gj_bx)
 		gap_junctions_b_y.append(gj_by)
 	gap_junctions = [gap_junctions_f_x,gap_junctions_f_y,gap_junctions_b_x,gap_junctions_b_y]
-	# return gap_junctions, cells
-	return gap_junctions_f_x,gap_junctions_f_y,gap_junctions_b_x,gap_junctions_b_y, cells
+	return gap_junctions, cells
+	# return gap_junctions_f_x,gap_junctions_f_y,gap_junctions_b_x,gap_junctions_b_y, cells
 
 ##------- Voltage clamps : 
 
@@ -223,6 +223,7 @@ def  set_recording_vectors(cells):
 
 	
 	v = [[[] for i in range(len(cells))] for i in range(len(cells))]
+	currents = [[[] for i in range(len(cells))] for i in range(len(cells))]
 	for i in range(len(cells)):
 		for j in range(len(cells)):
 			v[i][j] = h.Vector()
@@ -232,25 +233,29 @@ def  set_recording_vectors(cells):
 
 h.v_init = -70
 
-ncells = [2]
+ncells = [3]
 
 for N_cells in ncells:
-	# gap_junctions,cells = initialize_network(N_cells)
-	gap_junctions_f_x,gap_junctions_f_y,gap_junctions_b_x,gap_junctions_b_y,cells = initialize_network(N_cells)
+	gap_junctions,cells = initialize_network(N_cells)
+	# gap_junctions_f_x,gap_junctions_f_y,gap_junctions_b_x,gap_junctions_b_y,cells = initialize_network(N_cells)
 	
 	v,t = set_recording_vectors(cells)
-	cells[0][0].IP3_conpu= 0.00058 
-	print(cells[1][0].IP3_conpu) 
+	# cells[0][0].IP3_conpu= 0.00058 
+	# print(cells[1][0].IP3_conpu) 
 	print((cells)) 
 
-	cells[0][1].IP3_conpu =0.00066
-	cells[1][0].IP3_conpu =0.00069
-	cells[1][1].IP3_conpu =0.00063
+
+	# cells[0][1].IP3_conpu =0.00066
+	# cells[1][0].IP3_conpu =0.00069
+	# cells[1][1].IP3_conpu =0.00063
 
 	# ip3 = [0.00006,0.000068,0.00006]	
-	#ip3 = [(0.00058 + random.randrange(10)*0.00001) for x in range(N_cells)]
-	#for i in range(N_cells):
-	#	cells[i].IP3_conpu = ip3[i]
+	ip3 = [[[] for i in range(N_cells)] for i in range(N_cells)]
+	for i in range(N_cells):
+		for j in range(N_cells):
+			ip3[i][j] = (0.00058 + random.randrange(10)*0.00001)
+			cells[i][j].IP3_conpu = ip3[i][j]
+	# cells[0][0].IP3_conpu = 0.0
 
 	h.run()
 	
@@ -262,14 +267,14 @@ for N_cells in ncells:
 	# t = np.array(t.to_python())
 	# t = t/1000
 	# v = v.to_python()
-	np.save('v_ncells_'+str(N_cells)+'.npy', v)
+	np.save('v_ncells_2d_'+str(N_cells)+'.npy', v)
 	np.save('t.npy', t)
-	# np.savetxt('ip3_v_ncells_'+str(N_cells)+'.txt', ip3)
+	np.savetxt('ip3_v_ncells_2d_'+str(N_cells)+'.txt', ip3)
 
 
 	p.figure()
 
-	v_n = np.load('v_ncells_'+str(N_cells)+'.npy')
+	v_n = np.load('v_ncells_2d_'+str(N_cells)+'.npy')
 	t = np.load('t.npy')
 	for i in range(N_cells):
 		for j in range(N_cells):
