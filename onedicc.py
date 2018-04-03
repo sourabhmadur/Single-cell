@@ -7,7 +7,7 @@ from math import pi
 import random
 
 
-tstop = .1*1000
+tstop = 0.1*1000
 h.tstop=tstop
 h.dt=0.1
 h.celsius = (T-273)
@@ -214,7 +214,7 @@ def  set_recording_vectors(cells):
 h.v_init = -70
 
 # cells[0](0.5).v = -90
-ncells = [2,3,4]
+ncells = [3]
 
 for N_cells in ncells:
 	gap_junctions_f,gap_junctions_b,cells = initialize_network(N_cells)
@@ -222,7 +222,8 @@ for N_cells in ncells:
 	# cells[0].Pmito_conpu =0.8*0.12871 
 	# cells[1].Pmito_conpu =1.0*0.12871 
 	# cells[2].Pmito_conpu =1.2*0.12871 
-	ip3 = [(0.00058 + random.randrange(10)*0.00001) for x in range(N_cells)]
+	ip3 = [0.00006,0.000068,0.00006]
+	# ip3 = [(0.00058 + random.randrange(10)*0.00001) for x in range(N_cells)]
 	for i in range(N_cells):
 		cells[i].IP3_conpu = ip3[i]
 	h.run()
@@ -233,14 +234,15 @@ for N_cells in ncells:
 	# t = np.array(t.to_python())
 	# t = t/1000
 	# v = v.to_python()
-	np.savetxt('v_ncells_'+str(N_cells)+'.txt', v)
-	np.savetxt('t.txt', t)
+	np.save('v_ncells_'+str(N_cells)+'.npy', v)
+	np.save('t.npy', t)
+	np.savetxt('ip3_v_ncells_'+str(N_cells)+'.txt', ip3)
 
 
 	p.figure()
 
-	v_n = np.loadtxt('v_ncells_'+str(N_cells)+'.txt', dtype=float)
-	t = np.loadtxt('t.txt', dtype=float)
+	v_n = np.load('v_ncells_'+str(N_cells)+'.npy')
+	t = np.load('t.npy')
 	for i in range(N_cells):
 		p.plot(t,v_n[i] , label = 'cell '+ str(i))
 		# p.plot(t,v[1], color = 'blue', label = 'cell 1')
