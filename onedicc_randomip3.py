@@ -211,7 +211,7 @@ def  set_recording_vectors(cells):
 h.v_init = -70
 
 # cells[0](0.5).v = -90
-ncells = [3,5,9]
+ncells = [3,5,9,11]
 
 for N_cells in ncells:
 	gap_junctions_f,gap_junctions_b,cells = initialize_network(N_cells)
